@@ -1,0 +1,52 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Электронная вахта ПетрГУ</title>
+    <link rel="stylesheet" type="text/css" href="{% static "doors/styles.css" %}">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400" rel="stylesheet" type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100" rel="stylesheet" type='text/css'>
+</head>
+<body>
+    <div class="block-header">
+        <div class="btn-login"><h1 class="text">Войти</h1></div>
+    </div>
+
+    <div class="block-info">
+        <h1 class="title">Электронная вахта ПетрГУ</h1>
+        <p class="hyphen">—</p>
+        <p class="text"> система, позволяющая преподавателям и студентам получать ключи от кабинетов, используя только мобильный телефон</p>
+
+        <table>
+            <tr>
+                <td>
+                    <object type="image/svg+xml" data="{% static "doors/img/img_time.svg" %}" width="64" height="64" >
+                        Your browser does not support SVG
+                    </object>
+                </td>
+                <td>
+                    <object type="image/svg+xml" data="{% static "doors/img/img_camera.svg" %}" width="64" height="64" >
+                        Your browser does not support SVG
+                    </object>
+                </td>
+                <td>
+                    <object type="image/svg+xml" data="{% static "doors/img/img_schedule.svg" %}" width="64" height="64" >
+                        Your browser does not support SVG
+                    </object>
+                </td>
+            </tr>
+            <tr>
+                <td>Быстрое<br/>получение ключа</td>
+                <td>Учет<br/>пользователей</td>
+                <td>Возможность<br/>    бронирования<br/>(будущие версии)</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="block-footer">
+        <p class="place">Петрозаводский государственный университет</p>
+        <p class="year">2018</p>
+    </div>
+</body>
+</html>
