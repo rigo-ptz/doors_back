@@ -120,10 +120,6 @@ class User(models.Model):
         verbose_name_plural = 'Пользователи'
 
 
-def jwt_get_secret_key(user_model):
-    return user_model.jwt_secret
-
-
 class Room(models.Model):
     number = models.DecimalField(max_digits=3, decimal_places=0)
     floor = models.DecimalField(max_digits=1, decimal_places=0)

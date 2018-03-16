@@ -154,9 +154,10 @@ REST_FRAMEWORK = {
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1000),
+    'JWT_PAYLOAD_GET_USERNAME_HANDLER': 'doors.rest.custom_jwt.jwt_username_handler',
     'JWT_PAYLOAD_HANDLER': 'doors.rest.custom_jwt.jwt_payload_handler',
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'doors.rest.custom_jwt.jwt_response_payload_handler',
-    'JWT_GET_USER_SECRET_KEY': 'doors.models.jwt_get_secret_key',
+    'JWT_GET_USER_SECRET_KEY': 'doors.rest.custom_jwt.jwt_get_secret_key',
 }
 
 LOGGING = {

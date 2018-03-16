@@ -1,8 +1,8 @@
 from django.contrib.auth.models import BaseUserManager
-from ..models import User
+from ..models import DoorsUser
 
 
-def authenticate(phone, pin_code):
-    user = User.objects.get(phone_number=phone, pin_code=pin_code)
+def authenticate(email, phone, pin_code):
+    user = DoorsUser.objects.get(email=email, phone_number=phone, pin_code=pin_code)
     return user
 
