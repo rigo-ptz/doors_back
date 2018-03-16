@@ -26,7 +26,6 @@ class JWTSerializer(jwt_serializers.JSONWebTokenSerializer):
 
         if phone_number and pin_code:
             user = authenticate(email=email, phone=phone_number, pin_code=pin_code)
-            print("after auth")
             if user:
                 payload = jwt_payload_handler(user)
 
