@@ -1,4 +1,105 @@
 from django.db import models
+from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
+import uuid
+
+
+class DoorsUserManager(BaseUserManager):
+    def create_user(
+            self,
+            first_name,
+            surname,
+            last_name,
+            document_number,
+            phone_number,
+            email,
+            pin_code,
+            password=None
+    ):
+        """
+        Creates and saves a User with the given data
+        """
+        if not email:
+            raise ValueError("Не указан e-mail")
+
+        if not phone_number:
+            raise ValueError("Не указан телефон")
+
+        if not pin_code:
+            raise ValueError("Не указан PIN-код")
+
+        user = self.model(
+            first_name=first_name,
+            surname=surname,
+            last_name=last_name,
+            document_number=document_number,
+            phone_number=phone_number,
+            email=email,
+            pin_code=pin_code,
+            password=password,
+        )
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password):
+        """
+        Creates and saves a superuser with the given email, date of
+        birth and password.
+        """
+        user = self.model(
+            email=email,
+            password=password,
+        )
+        user.set_password(password)
+        user.active = True
+        user.is_superuser = True
+        user.staff = True
+        user.save(using=self._db)
+        return user
+
+
+class DoorsUser(AbstractBaseUser, PermissionsMixin):
+    first_name = models.CharField(max_length=100, verbose_name="Имя")
+    surname = models.CharField(max_length=100, verbose_name="Фамилия")
+    last_name = models.CharField(max_length=100, verbose_name="Отчество")
+    document_number = models.CharField(max_length=25, verbose_name="Номер документа")
+    phone_number = models.CharField(max_length=16, verbose_name="Номер телефона")
+    email = models.CharField(max_length=200, verbose_name="e-mail", unique=True)
+    pin_code = models.CharField(max_length=4, verbose_name="PIN-код")
+    jwt_secret = models.UUIDField(default=uuid.uuid4)
+
+    active = models.BooleanField(default=True)
+    staff = models.BooleanField(default=False, verbose_name="Доступ к админке?")
+
+    USERNAME_FIELD = 'email'
+
+    objects = DoorsUserManager()
+
+    def __str__(self):
+        return "{0} {1} {2}".format(self.surname, self.first_name, self.last_name)
+
+    @property
+    def is_staff(self):
+        """Is the user a member of staff?"""
+        return self.staff
+
+    @property
+    def is_active(self):
+        """Is the user active?"""
+        return self.active
+
+    # this methods are require to login super user from admin panel
+    def has_perm(self, perm, obj=None):
+        return self.is_staff
+
+    # this methods are require to login super user from admin panel
+    def has_module_perms(self, app_label):
+        return self.is_staff
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
 
 class User(models.Model):
@@ -9,6 +110,7 @@ class User(models.Model):
     phone_number = models.CharField(max_length=16, verbose_name="Номер телефона")
     email = models.CharField(max_length=200, verbose_name="e-mail", default="")
     pin_code = models.CharField(max_length=4, verbose_name="PIN-код")
+    jwt_secret = models.UUIDField(default=uuid.uuid4)
 
     def __str__(self):
         return "{0} {1} {2}".format(self.surname, self.first_name, self.last_name)
@@ -16,6 +118,10 @@ class User(models.Model):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+
+def jwt_get_secret_key(user_model):
+    return user_model.jwt_secret
 
 
 class Room(models.Model):
