@@ -1,29 +1,18 @@
 from django.views.generic import TemplateView
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes, renderer_classes
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework import permissions
 from rest_framework_jwt.views import ObtainJSONWebToken
-from .models import DoorsUser, Room, KeyCell
-from .rest.serializers import UserSerializer, RoomSerializer, JWTSerializer
+from .models import Room, KeyCell
+from .rest.serializers import  RoomSerializer, JWTSerializer
 
 import uuid
 
 
 class IndexView(TemplateView):
     template_name = "doors/index.html"
-
-
-@csrf_exempt
-def api_user_list_test(request):
-    if request.method == "GET":
-        users = DoorsUser.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return JsonResponse(serializer.data, safe=False)
 
 
 @api_view(["POST"])
@@ -56,7 +45,18 @@ def api_room_get_key(request, room_id):
         content = {'reason': 'Ключ от кабинета {0} уже взят.'.format(room_id)}
         return Response(content)
 
-@api_view(['POST'])
+
+@api_view(['GET'])
 @permission_classes((permissions.IsAuthenticated, ))
+@renderer_classes((JSONRenderer, ))
 def api_room_return_key(request, room_id):
-    pass
+    key_cell = KeyCell.objects.get(room__number=room_id)
+    if not key_cell.has_key:
+        key_cell.has_key = True
+        key_cell.save()
+        room = Room.objects.get(number=room_id)
+        serializer = RoomSerializer(room)
+        return Response(serializer.data)
+    else:
+        content = {'reason': 'Ключ от кабинета {0} уже находится в ячейке.'.format(room_id)}
+        return Response(content)
