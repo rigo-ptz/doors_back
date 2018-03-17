@@ -1,0 +1,1 @@
+web: gunicorn petrsu.wsgi --log-file -

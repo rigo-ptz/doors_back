@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import ast
 import datetime
+import dj_database_url
+from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,11 +24,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-with open("petrsu/local_data/secret_key.txt", "r") as f:
-    SECRET_KEY = f.read().strip()
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['127.0.0.1', '127.0.0.1:8000', 'localhost', 'localhost:8000']
 
@@ -79,18 +80,21 @@ WSGI_APPLICATION = 'petrsu.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
-with open("petrsu/local_data/db_data.txt") as file:
-    db_data = ast.literal_eval(file.read())
+# with open("petrsu/local_data/db_data.txt") as file:
+#     db_data = ast.literal_eval(file.read())
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': db_data["NAME"],
-        'USER': db_data["USER"],
-        'PASSWORD': db_data["PASSWORD"],
-        'HOST': db_data["HOST"],
-        'PORT': db_data["PORT"]
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL')
+    )
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': db_data["NAME"],
+    #     'USER': db_data["USER"],
+    #     'PASSWORD': db_data["PASSWORD"],
+    #     'HOST': db_data["HOST"],
+    #     'PORT': db_data["PORT"]
+    # }
 }
 
 
