@@ -121,8 +121,8 @@ class User(models.Model):
 
 
 class Room(models.Model):
-    number = models.DecimalField(max_digits=3, decimal_places=0)
-    floor = models.DecimalField(max_digits=1, decimal_places=0)
+    number = models.DecimalField(max_digits=3, decimal_places=0, verbose_name="Номер кабинета")
+    floor = models.DecimalField(max_digits=1, decimal_places=0, verbose_name="Этаж")
 
     def __str__(self):
         return "Кабинет № {0}".format(self.number)

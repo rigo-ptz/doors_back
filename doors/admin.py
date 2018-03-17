@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
 from .models import User, Room, KeyCell, LogTable
 from .forms import UserAdminChangeForm, UserAdminCreationForm
@@ -87,3 +88,5 @@ admin.site.register(DoorsUser, admin_class=DoorsUserAdmin)
 admin.site.register(Room, admin_class=RoomAdmin)
 admin.site.register(KeyCell, admin_class=KeyCellAdmin)
 admin.site.register(LogTable, admin_class=LogAdmin)
+
+admin.site.unregister(Group)

@@ -1,4 +1,4 @@
-from ..models import DoorsUser
+from ..models import DoorsUser, Room
 from rest_framework import serializers as rest_serializers
 from rest_framework_jwt import serializers as jwt_serializers
 from ..rest.custom_jwt import jwt_payload_handler
@@ -10,6 +10,12 @@ class UserSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = DoorsUser
         fields = ('first_name', 'surname', 'last_name', 'phone_number', 'pin_code')
+
+
+class RoomSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = ('number', 'floor')
 
 
 class JWTSerializer(jwt_serializers.JSONWebTokenSerializer):
