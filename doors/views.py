@@ -34,7 +34,12 @@ def api_user_logout(request):
 @permission_classes((permissions.IsAuthenticated, ))
 @renderer_classes((JSONRenderer, ))
 def api_room_get_key(request, room_id):
-    key_cell = KeyCell.objects.get(room__number=room_id)
+    try:
+        key_cell = KeyCell.objects.get(room__number=room_id)
+    except KeyCell.DoesNotExist:
+        content = {'reason': 'Такого ключа нет в системе.'}
+        return Response(content)
+
     if key_cell.has_key:
         key_cell.has_key = False
         key_cell.save()
@@ -50,7 +55,12 @@ def api_room_get_key(request, room_id):
 @permission_classes((permissions.IsAuthenticated, ))
 @renderer_classes((JSONRenderer, ))
 def api_room_return_key(request, room_id):
-    key_cell = KeyCell.objects.get(room__number=room_id)
+    try:
+        key_cell = KeyCell.objects.get(room__number=room_id)
+    except KeyCell.DoesNotExist:
+        content = {'reason': 'Такого ключа нет в системе.'}
+        return Response(content)
+
     if not key_cell.has_key:
         key_cell.has_key = True
         key_cell.save()
