@@ -41,7 +41,7 @@ def api_room_get_key(request, room_id):
     try:
         key_cell = KeyCell.objects.get(room__number=room_id)
     except KeyCell.DoesNotExist:
-        content = {'reason': 'Такого ключа нет в системе.'}
+        content = {'reason': 'Такого ключа нет в системе.', 'action': 'get_key'}
         return Response(content)
 
     if key_cell.has_key:
@@ -50,9 +50,9 @@ def api_room_get_key(request, room_id):
         key_cell.save()
         room = Room.objects.get(number=room_id)
         serializer = RoomSerializer(room)
-        return Response(serializer.data)
+        return Response(serializer.data.update({'action': 'get_key'}))
     else:
-        content = {'reason': 'Ключ от кабинета {0} уже взят.'.format(room_id)}
+        content = {'reason': 'Ключ от кабинета {0} уже взят.'.format(room_id), 'action': 'get_key'}
         return Response(content)
 
 
@@ -64,7 +64,7 @@ def api_room_return_key(request, room_id):
     try:
         key_cell = KeyCell.objects.get(room__number=room_id)
     except KeyCell.DoesNotExist:
-        content = {'reason': 'Такого ключа нет в системе.'}
+        content = {'reason': 'Такого ключа нет в системе.', 'action': 'return_key'}
         return Response(content)
 
     if not key_cell.has_key:
@@ -75,7 +75,7 @@ def api_room_return_key(request, room_id):
         serializer = RoomSerializer(room)
         return Response(serializer.data)
     else:
-        content = {'reason': 'Ключ от кабинета {0} уже находится в ячейке.'.format(room_id)}
+        content = {'reason': 'Ключ от кабинета {0} уже находится в ячейке.'.format(room_id), 'action': 'return_key'}
         return Response(content)
 
 
@@ -95,7 +95,7 @@ def api_room_get_key_by_schedule(request, date_str):
         if lesson is None:
             raise Lesson.DoesNotExist
     except Lesson.DoesNotExist:
-        content = {'reason': 'В расписании нет предметов'}
+        content = {'reason': 'В расписании нет предметов', 'action': 'get_key_by_schedule'}
         return Response(content)
 
     diff = lesson.time_start - client_time
@@ -106,14 +106,15 @@ def api_room_get_key_by_schedule(request, date_str):
         content = {
             'reason': 'Ваше занятие через {0} Вы можете взять ключ за 30 минут.'.format(
                 pretty_time_delta(diff_sec)
-            )
+            ),
+            'action': 'get_key_by_schedule'
         }
         return Response(content)
     else:
         try:
             key_cell = KeyCell.objects.get(room__number=lesson.room.number)
         except KeyCell.DoesNotExist:
-            content = {'reason': 'Такого ключа нет в системе.'}
+            content = {'reason': 'Такого ключа нет в системе.', 'action': 'get_key_by_schedule'}
             return Response(content)
 
         if key_cell.has_key:
@@ -122,10 +123,10 @@ def api_room_get_key_by_schedule(request, date_str):
             key_cell.save()
             room = Room.objects.get(number=lesson.room.number)
             serializer = RoomSerializer(room)
-            return Response(serializer.data)
+            return Response(serializer.data.update({'action': 'get_key_by_schedule'}))
         else:
             if key_cell.user_who_get is None:
-                content = {'reason': 'Не можем найти преподавателя, взявшего ключ.'}
+                content = {'reason': 'Не можем найти преподавателя, взявшего ключ.', 'action': 'get_key_by_schedule'}
                 return Response(content)
             else:
                 content = {
@@ -133,7 +134,8 @@ def api_room_get_key_by_schedule(request, date_str):
                         lesson.room.number,
                         key_cell.user_who_get.__str__(),
                         key_cell.user_who_get.phone_number
-                    )
+                    ),
+                    'action': 'get_key_by_schedule'
                 }
                 return Response(content)
 
