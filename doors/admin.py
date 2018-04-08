@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from django.http import HttpResponseRedirect
-from .models import User, Room, KeyCell, LogTable
+from .models import User, Room, KeyCell, LogTable, Lesson
 from .forms import UserAdminChangeForm, UserAdminCreationForm
 from .models import DoorsUser
 
@@ -66,7 +66,12 @@ class RoomAdmin(admin.ModelAdmin):
 
 
 class KeyCellAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "has_key")
+    list_display = ("__str__", "has_key", 'get_user')
+
+    def get_user(self, obj):
+        return obj.user_who_get.__str__()
+
+    get_user.short_description = "Кто взял ключ?"
 
 
 class LogAdmin(admin.ModelAdmin):
@@ -83,10 +88,25 @@ class LogAdmin(admin.ModelAdmin):
     get_room.short_description = "Кабинет"
 
 
+class LessonAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "time_start", 'time_end', 'get_room', 'get_teacher')
+
+    def get_room(self, obj):
+        return obj.room.number
+
+    get_room.short_description = "Кабинет"
+
+    def get_teacher(self, obj):
+        return obj.teacher
+
+    get_teacher.short_description = 'Преподаватель'
+
+
 admin.site.register(DoorsUser, admin_class=DoorsUserAdmin)
 # admin.site.register(User, admin_class=UserAdmin)
 admin.site.register(Room, admin_class=RoomAdmin)
 admin.site.register(KeyCell, admin_class=KeyCellAdmin)
 admin.site.register(LogTable, admin_class=LogAdmin)
+admin.site.register(Lesson, admin_class=LessonAdmin)
 
 admin.site.unregister(Group)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 import uuid
+import pytz
 
 
 class DoorsUserManager(BaseUserManager):
@@ -135,6 +136,7 @@ class Room(models.Model):
 class KeyCell(models.Model):
     room = models.OneToOneField(Room, on_delete=models.CASCADE)
     has_key = models.BooleanField(verbose_name="Ключ в ячейке?")
+    user_who_get = models.ForeignKey(DoorsUser, on_delete=models.CASCADE, default=None, blank=True, null=True, verbose_name="Кто взял ключ")
 
     def __str__(self):
         return "Ячейка для кабинета № {0}".format(self.room.number)
@@ -158,3 +160,18 @@ class LogTable(models.Model):
     class Meta:
         verbose_name = 'Лог'
         verbose_name_plural = 'Логи'
+
+
+class Lesson(models.Model):
+    time_start = models.DateTimeField(verbose_name="Время начала")
+    time_end = models.DateTimeField(verbose_name="Время окончания")
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    teacher = models.ForeignKey(DoorsUser, on_delete=models.CASCADE, default=None)
+
+    def __str__(self):
+        return "Занятие"
+
+    class Meta:
+        verbose_name = 'Занятие'
+        verbose_name_plural = 'Занятия'
+
