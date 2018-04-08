@@ -50,7 +50,9 @@ def api_room_get_key(request, room_id):
         key_cell.save()
         room = Room.objects.get(number=room_id)
         serializer = RoomSerializer(room)
-        return Response(serializer.data.update({'action': 'get_key'}))
+        result = serializer.data
+        result.update(action='get_key')
+        return Response(result)
     else:
         content = {'reason': 'Ключ от кабинета {0} уже взят.'.format(room_id), 'action': 'get_key'}
         return Response(content)
@@ -73,7 +75,9 @@ def api_room_return_key(request, room_id):
         key_cell.save()
         room = Room.objects.get(number=room_id)
         serializer = RoomSerializer(room)
-        return Response(serializer.data)
+        result = serializer.data
+        result.update(action='return_key')
+        return Response(result)
     else:
         content = {'reason': 'Ключ от кабинета {0} уже находится в ячейке.'.format(room_id), 'action': 'return_key'}
         return Response(content)
@@ -123,7 +127,9 @@ def api_room_get_key_by_schedule(request, date_str):
             key_cell.save()
             room = Room.objects.get(number=lesson.room.number)
             serializer = RoomSerializer(room)
-            return Response(serializer.data.update({'action': 'get_key_by_schedule'}))
+            result = serializer.data
+            result.update(action='get_key_by_schedule')
+            return Response(result)
         else:
             if key_cell.user_who_get is None:
                 content = {'reason': 'Не можем найти преподавателя, взявшего ключ.', 'action': 'get_key_by_schedule'}
